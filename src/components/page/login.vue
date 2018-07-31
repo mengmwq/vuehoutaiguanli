@@ -1,0 +1,96 @@
+
+<template>
+  <el-form :rules="rules2" label-position="left" label-width="0px" class="demo-ruleForm card-box loginform">
+    <h3 class="title">库存管理后台</h3>
+    <el-form-item>
+      <el-input type="text" auto-complete="off" placeholder="账号" v-model="account"></el-input>
+    </el-form-item>
+    <el-form-item>
+      <el-input type="password" auto-complete="off" placeholder="密码" v-model="checkPass"  ></el-input>
+    </el-form-item>
+    <el-form-item style="width:100%;">
+      <el-button type="primary" style="width:100%;" @click.native="handleSubmit2">登录</el-button>
+    </el-form-item>
+  </el-form>
+</template>
+
+<script>
+  export default {
+    data() {
+      return {
+        logining: false,
+        account: "",
+        checkPass: "",
+        rules2: {
+          account: [{ required: true, message: "请输入账号", trigger: "blur" }],
+          checkPass: [{ required: true, message: "请输入密码", trigger: "blur" }]
+        }
+      };
+    },
+    methods: {
+      handleSubmit2(ev) {
+        let that = this;
+        this.$axios({
+          url: "http://www.ccsc58.cc/zjzljkpt/php/public/admin/devicenum-login",
+          method: "post",
+          data: {
+            username: this.account,
+            password:this.checkPass
+          },
+          transformRequest: [
+            function(data) {
+              let ret = "";
+              for (let it in data) {
+                ret +=
+                  encodeURIComponent(it) +
+                  "=" + 
+                  encodeURIComponent(data[it]) +
+                  "&";
+              }
+              return ret;
+            }
+          ],
+          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        }).then(function(res) {
+
+          if (res.data.code == "200") {
+
+            window.sessionStorage.setItem('username',that.account);
+
+            that.$router.push({path:'/home'});
+
+          }else{
+            that.$message(res.data.message);
+          }
+        });
+
+      }
+    }
+  };
+</script>
+
+<style scoped>
+  .card-box {
+    padding: 20px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    background-clip: padding-box;
+    margin-bottom: 20px;
+    background-color: #f9fafc;
+    margin: 180px auto;
+    width: 400px;
+    border: 2px solid #8492a6;
+  }
+
+  .title {
+    margin: 0px auto 40px auto;
+    text-align: center;
+    color: #505458;
+  }
+
+  .loginform {
+    width: 350px;
+    padding: 35px 35px 15px 35px;
+  }
+</style>
